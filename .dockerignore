@@ -1,0 +1,24 @@
+# node / build artifacts
+**/node_modules
+**/dist
+dist
+node_modules
+
+# Git & CI
+.git
+.github
+
+# Editor / OS
+.vscode
+.idea
+.DS_Store
+
+# Logs & coverage
+npm-debug.log*
+yarn-error.log*
+coverage
+**/coverage
+
+# Env / secrets
+.env
+.env.*
