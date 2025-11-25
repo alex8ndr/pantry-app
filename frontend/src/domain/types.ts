@@ -1,0 +1,51 @@
+export type StorageAreaId = string;
+
+export type AreaColor = 
+  | 'slate'
+  | 'blue' 
+  | 'cyan' 
+  | 'emerald' 
+  | 'amber' 
+  | 'violet' 
+  | 'rose';
+
+export const AREA_COLORS: AreaColor[] = [
+  'slate', 'blue', 'cyan', 'emerald', 'amber', 'violet', 'rose'
+];
+
+export type AreaIcon = 
+  | 'refrigerator'
+  | 'snowflake'
+  | 'warehouse'
+  | 'box'
+  | 'home'
+  | 'archive'
+  | 'package';
+
+export const AREA_ICONS: AreaIcon[] = [
+  'refrigerator', 'snowflake', 'warehouse', 'box', 'home', 'archive', 'package'
+];
+
+export interface StorageArea {
+  id: StorageAreaId;
+  name: string;
+  icon: AreaIcon;
+  color: AreaColor;
+}
+
+export interface PantryItem {
+  id: string;
+  name: string;
+  quantity: number;
+  storageAreaId: StorageAreaId;
+  createdAt: number;
+  // Future fields - items with different values here won't merge:
+  // expiryDate?: string;
+  // isOpened?: boolean;
+}
+
+export const DEFAULT_STORAGE_AREAS: StorageArea[] = [
+  { id: 'fridge', name: 'Fridge', icon: 'refrigerator', color: 'cyan' },
+  { id: 'freezer', name: 'Freezer', icon: 'snowflake', color: 'blue' },
+  { id: 'pantry', name: 'Pantry', icon: 'warehouse', color: 'amber' },
+];
