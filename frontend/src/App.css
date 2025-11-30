@@ -1,42 +1,692 @@
-#root {
-  max-width: 1280px;
+/* ===========================================
+   CSS Variables
+   =========================================== */
+:root {
+  --color-bg: #f5f5f5;
+  --color-surface: #ffffff;
+  --color-text: #1f2937;
+  --color-text-secondary: #6b7280;
+  --color-border: #e5e7eb;
+  --color-hover: #f9fafb;
+
+  /* Area accent colors */
+  --accent-slate: #64748b;
+  --accent-blue: #3b82f6;
+  --accent-cyan: #06b6d4;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-violet: #8b5cf6;
+  --accent-rose: #f43f5e;
+
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  
+  /* Desktop card heights */
+  --card-body-expanded: 300px;
+  --card-body-collapsed: 120px;
+}
+
+/* ===========================================
+   App Layout
+   =========================================== */
+.app {
+  min-height: 100vh;
+  background: var(--color-bg);
+  overflow-x: hidden;
+}
+
+.app-header {
+  padding: 1.25rem 1.5rem;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.app-main {
+  padding: 1.5rem;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+  box-sizing: border-box;
+}
+
+/* ===========================================
+   Areas Grid - Responsive columns
+   =========================================== */
+.areas-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 1fr;
+  width: 100%;
+  align-items: start;
+}
+
+@media (min-width: 640px) {
+  .areas-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .areas-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1400px) {
+  .areas-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* ===========================================
+   Storage Area Card
+   =========================================== */
+.area-card {
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Prevent grid blowout */
+}
+
+.area-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+  cursor: default;
+}
+
+.area-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.area-card-title h2 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.area-card-count {
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.125rem 0.5rem;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+/* Collapse indicator in header - hidden on desktop, shown on mobile */
+.area-card-collapse-indicator {
+  display: none;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.area-card-settings {
+  padding: 0.375rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.area-card-settings:hover {
+  background: var(--color-hover);
+  color: var(--color-text);
+}
+
+/* Card header accent colors */
+.area-card--slate .area-card-header { border-left: 3px solid var(--accent-slate); }
+.area-card--blue .area-card-header { border-left: 3px solid var(--accent-blue); }
+.area-card--cyan .area-card-header { border-left: 3px solid var(--accent-cyan); }
+.area-card--emerald .area-card-header { border-left: 3px solid var(--accent-emerald); }
+.area-card--amber .area-card-header { border-left: 3px solid var(--accent-amber); }
+.area-card--violet .area-card-header { border-left: 3px solid var(--accent-violet); }
+.area-card--rose .area-card-header { border-left: 3px solid var(--accent-rose); }
+
+.area-card--slate .area-card-title svg { color: var(--accent-slate); }
+.area-card--blue .area-card-title svg { color: var(--accent-blue); }
+.area-card--cyan .area-card-title svg { color: var(--accent-cyan); }
+.area-card--emerald .area-card-title svg { color: var(--accent-emerald); }
+.area-card--amber .area-card-title svg { color: var(--accent-amber); }
+.area-card--violet .area-card-title svg { color: var(--accent-violet); }
+.area-card--rose .area-card-title svg { color: var(--accent-rose); }
+
+/* ===========================================
+   Add Item Form (inline in card)
+   =========================================== */
+.area-card-form {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-hover);
+  flex-shrink: 0;
+}
+
+.area-card-form input[type="text"] {
+  flex: 1;
+  min-width: 0;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.area-card-form input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.qty-input {
+  display: flex;
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.qty-input button {
+  padding: 0.35rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qty-input button:hover {
+  color: var(--color-text);
+}
+
+.qty-input span {
+  min-width: 1.25rem;
   text-align: center;
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.add-btn {
+  padding: 0.4rem;
+  border: none;
+  background: var(--accent-blue);
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.add-btn:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.add-btn:disabled {
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+/* ===========================================
+   Card Body & Item List
+   =========================================== */
+.area-card-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  max-height: var(--card-body-expanded);
+}
+
+/* Desktop collapsed: limit height with scroll */
+.area-card-body--collapsed {
+  max-height: var(--card-body-collapsed);
+}
+
+.area-card-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.item-row:last-child {
+  border-bottom: none;
+}
+
+.item-row:hover {
+  background: var(--color-hover);
+}
+
+.item-name {
+  flex: 1;
+  font-size: 0.875rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  flex-shrink: 0;
+}
+
+.item-controls button {
+  padding: 0.2rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-controls button:hover {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.item-qty {
+  min-width: 1.25rem;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.item-remove:hover {
+  background: #fee2e2 !important;
+  color: #dc2626 !important;
+}
+
+.area-card-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  padding: 1.5rem 1rem;
+  margin: 0;
+}
+
+/* ===========================================
+   Collapse Toggle Button (at bottom of card)
+   =========================================== */
+.area-card-collapse-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem;
+  border: none;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-hover);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
+.area-card-collapse-toggle:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+/* ===========================================
+   Add Area Card
+   =========================================== */
+.add-area-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 100px;
+  background: transparent;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.add-area-card:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.add-area-card span {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* ===========================================
+   Modal
+   =========================================== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 100;
+}
+
+.modal {
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.modal-close {
+  padding: 0.25rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.modal-close:hover {
+  background: var(--color-hover);
+  color: var(--color-text);
+}
+
+.modal-form {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-field label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.form-field input[type="text"] {
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+.form-field input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+/* Icon Picker */
+.icon-picker {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.icon-option {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-option:hover {
+  border-color: var(--color-text-secondary);
+  color: var(--color-text);
+}
+
+.icon-option.selected {
+  border-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent-blue);
+}
+
+/* Color Picker */
+.color-picker {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.color-option {
+  width: 32px;
+  height: 32px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+}
+
+.color-option.selected::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+
+.color-option--slate { background: var(--accent-slate); color: var(--accent-slate); }
+.color-option--blue { background: var(--accent-blue); color: var(--accent-blue); }
+.color-option--cyan { background: var(--accent-cyan); color: var(--accent-cyan); }
+.color-option--emerald { background: var(--accent-emerald); color: var(--accent-emerald); }
+.color-option--amber { background: var(--accent-amber); color: var(--accent-amber); }
+.color-option--violet { background: var(--accent-violet); color: var(--accent-violet); }
+.color-option--rose { background: var(--accent-rose); color: var(--accent-rose); }
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.modal-actions-right {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.modal-actions button {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-surface);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.modal-actions button:hover {
+  background: var(--color-hover);
+}
+
+.modal-actions .primary-btn {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+}
+
+.modal-actions .primary-btn:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.modal-actions .primary-btn:disabled {
+  background: var(--color-border);
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.modal-actions .delete-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: #dc2626;
+  border-color: transparent;
+}
+
+.modal-actions .delete-btn:hover {
+  background: #fee2e2;
+}
+
+.modal-actions .delete-btn.confirm {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: white;
+}
+
+.modal-actions .delete-btn.confirm:hover {
+  background: #b91c1c;
+}
+
+/* ===========================================
+   Mobile Adjustments
+   =========================================== */
+@media (max-width: 639px) {
+  .app-header {
+    padding: 1rem;
   }
-  to {
-    transform: rotate(360deg);
+
+  .app-header h1 {
+    font-size: 1.25rem;
   }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  .app-main {
+    padding: 0.75rem;
   }
-}
 
-.card {
-  padding: 2em;
-}
+  .areas-grid {
+    gap: 0.75rem;
+  }
 
-.read-the-docs {
-  color: #888;
+  /* On mobile, header is clickable to collapse */
+  .area-card-header {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .area-card-header:active {
+    background: var(--color-hover);
+  }
+
+  /* Show collapse indicator in header on mobile */
+  .area-card-collapse-indicator {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Hide bottom toggle on mobile */
+  .area-card-collapse-toggle {
+    display: none;
+  }
+
+  /* On mobile, no max height restrictions - page scrolls naturally */
+  .area-card-body {
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  /* On mobile, collapsed hides content completely */
+  .area-card--collapsed .area-card-form,
+  .area-card--collapsed .area-card-body {
+    display: none;
+  }
+
+  .area-card--collapsed .area-card-header {
+    border-bottom: none;
+  }
+
+  .area-card-form {
+    padding: 0.5rem;
+  }
+
+  .area-card-form input[type="text"] {
+    padding: 0.5rem;
+    font-size: 1rem; /* Prevents zoom on iOS */
+  }
+
+  .item-row {
+    padding: 0.5rem;
+  }
+
+  .add-area-card {
+    min-height: 60px;
+    padding: 1rem;
+  }
+
+  .modal {
+    margin: 0.5rem;
+    max-width: calc(100% - 1rem);
+  }
 }
