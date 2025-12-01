@@ -31,6 +31,7 @@ export interface StorageArea {
   name: string;
   icon: AreaIcon;
   color: AreaColor;
+  order: number;
 }
 
 export interface PantryItem {
@@ -45,7 +46,7 @@ export interface PantryItem {
 }
 
 export const DEFAULT_STORAGE_AREAS: StorageArea[] = [
-  { id: 'fridge', name: 'Fridge', icon: 'refrigerator', color: 'cyan' },
-  { id: 'freezer', name: 'Freezer', icon: 'snowflake', color: 'blue' },
-  { id: 'pantry', name: 'Pantry', icon: 'warehouse', color: 'amber' },
+  { id: 'fridge', name: 'Fridge', icon: 'refrigerator', color: 'cyan', order: 0 },
+  { id: 'freezer', name: 'Freezer', icon: 'snowflake', color: 'blue', order: 1 },
+  { id: 'pantry', name: 'Pantry', icon: 'warehouse', color: 'amber', order: 2 },
 ];

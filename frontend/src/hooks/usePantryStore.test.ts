@@ -128,4 +128,45 @@ describe('usePantryStore', () => {
     expect(area1Items).toHaveLength(1);
     expect(area1Items[0].name).toBe('Milk');
   });
+
+  it('reorders storage areas', () => {
+    const { result } = renderHook(() => usePantryStore());
+
+    const originalOrder = result.current.storageAreas.map((a) => a.id);
+    const reversedOrder = [...originalOrder].reverse();
+
+    act(() => {
+      result.current.reorderStorageAreas(reversedOrder);
+    });
+
+    expect(result.current.storageAreas.map((a) => a.id)).toEqual(reversedOrder);
+    // Verify order field is updated correctly
+    result.current.storageAreas.forEach((area, idx) => {
+      expect(area.order).toBe(idx);
+    });
+  });
+
+  it('maintains order values after adding a new storage area', () => {
+    const { result } = renderHook(() => usePantryStore());
+
+    act(() => {
+      result.current.addStorageArea('Basement', 'box', 'violet');
+    });
+
+    const basement = result.current.storageAreas.find((a) => a.name === 'Basement');
+    expect(basement?.order).toBe(3); // Should be at the end
+  });
+
+  it('recomputes order values after deleting a storage area', () => {
+    const { result } = renderHook(() => usePantryStore());
+
+    act(() => {
+      result.current.deleteStorageArea(result.current.storageAreas[0].id);
+    });
+
+    // Order should be recomputed to fill gaps
+    result.current.storageAreas.forEach((area, idx) => {
+      expect(area.order).toBe(idx);
+    });
+  });
 });

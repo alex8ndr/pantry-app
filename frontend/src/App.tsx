@@ -5,11 +5,37 @@ import { StorageAreaCard, EditAreaModal, AddAreaModal } from './components';
 import { usePantryStore } from './hooks/usePantryStore';
 import type { StorageAreaId } from './domain/types';
 
+function LoadingSkeleton() {
+  return (
+    <div className="app">
+      <header className="app-header">
+        <h1>Pantry App</h1>
+      </header>
+
+      <main className="app-main">
+        <div className="areas-grid">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="area-card skeleton-card">
+              <div className="skeleton-header"></div>
+              <div className="skeleton-form"></div>
+              <div className="skeleton-body"></div>
+            </div>
+          ))}
+        </div>
+      </main>
+    </div>
+  );
+}
+
 function App() {
   const store = usePantryStore();
   const [editingAreaId, setEditingAreaId] = useState<StorageAreaId | null>(null);
   const [isAddingArea, setIsAddingArea] = useState(false);
   const [collapsedAreas, setCollapsedAreas] = useState<Set<StorageAreaId>>(new Set());
+
+  if (store.isLoading) {
+    return <LoadingSkeleton />;
+  }
 
   const editingArea = editingAreaId
     ? store.storageAreas.find((a) => a.id === editingAreaId)
