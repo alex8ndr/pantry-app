@@ -27,6 +27,39 @@ function App() {
     });
   };
 
+  // Show loading state
+  if (store.isLoading) {
+    return (
+      <div className="app">
+        <header className="app-header">
+          <h1>Pantry App</h1>
+        </header>
+        <main className="app-main">
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            <p>Loading...</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (store.error) {
+    return (
+      <div className="app">
+        <header className="app-header">
+          <h1>Pantry App</h1>
+        </header>
+        <main className="app-main">
+          <div style={{ textAlign: 'center', padding: '2rem', color: 'red' }}>
+            <p>Error: {store.error}</p>
+            <p>Make sure the backend server is running on http://localhost:3000</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="app">
       <header className="app-header">
