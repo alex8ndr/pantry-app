@@ -169,4 +169,92 @@ describe('usePantryStore', () => {
       expect(area.order).toBe(idx);
     });
   });
+
+  it('opens all items when quantity matches', () => {
+    const { result } = renderHook(() => usePantryStore());
+    const areaId = result.current.storageAreas[0].id;
+
+    act(() => {
+      result.current.addItem('Milk', 2, areaId);
+    });
+
+    const itemId = result.current.items[0].id;
+    
+    // Item should start as unopened
+    expect(result.current.items[0].isOpened).toBe(false);
+
+    // Open all items (quantity = 2)
+    act(() => {
+      result.current.openItem(itemId, 2);
+    });
+
+    // Should still be 1 item, but now opened
+    expect(result.current.items).toHaveLength(1);
+    expect(result.current.items[0].isOpened).toBe(true);
+    expect(result.current.items[0].openedAt).toBeDefined();
+    expect(result.current.items[0].quantity).toBe(2);
+  });
+
+  it('splits item when opening partial quantity', () => {
+    const { result } = renderHook(() => usePantryStore());
+    const areaId = result.current.storageAreas[0].id;
+
+    act(() => {
+      result.current.addItem('Milk', 5, areaId);
+    });
+
+    const itemId = result.current.items[0].id;
+    
+    // Open only 2 out of 5
+    act(() => {
+      result.current.openItem(itemId, 2);
+    });
+
+    // Should now have 2 items
+    expect(result.current.items).toHaveLength(2);
+    
+    const openedMilk = result.current.items.find(item => item.isOpened);
+    const unopenedMilk = result.current.items.find(item => !item.isOpened);
+
+    expect(openedMilk?.quantity).toBe(2);
+    expect(openedMilk?.openedAt).toBeDefined();
+    expect(unopenedMilk?.quantity).toBe(3);
+    expect(unopenedMilk?.openedAt).toBeUndefined();
+  });
+
+  it('does not merge items with different opened states', () => {
+    const { result } = renderHook(() => usePantryStore());
+    const areaId = result.current.storageAreas[0].id;
+
+    // Add unopened milk
+    act(() => {
+      result.current.addItem('Milk', 2, areaId);
+    });
+
+    expect(result.current.items).toHaveLength(1);
+    expect(result.current.items[0].quantity).toBe(2);
+
+    const firstMilkId = result.current.items[0].id;
+
+    // Open it
+    act(() => {
+      result.current.openItem(firstMilkId, 2);
+    });
+
+    expect(result.current.items[0].isOpened).toBe(true);
+
+    // Add more milk (unopened) - should NOT merge with opened milk
+    act(() => {
+      result.current.addItem('Milk', 3, areaId);
+    });
+
+    // Should now have 2 separate milk items
+    expect(result.current.items).toHaveLength(2);
+    
+    const openedMilk = result.current.items.find(item => item.isOpened);
+    const unopenedMilk = result.current.items.find(item => !item.isOpened);
+
+    expect(openedMilk?.quantity).toBe(2);
+    expect(unopenedMilk?.quantity).toBe(3);
+  });
 });

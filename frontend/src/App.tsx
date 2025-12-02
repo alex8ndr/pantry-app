@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import './App.css';
-import { StorageAreaCard, EditAreaModal, AddAreaModal } from './components';
+import { StorageAreaCard, EditAreaModal, AddAreaModal, OpenItemModal } from './components';
 import { usePantryStore } from './hooks/usePantryStore';
-import type { StorageAreaId } from './domain/types';
+import type { StorageAreaId, PantryItem } from './domain/types';
 
 function LoadingSkeleton() {
   return (
@@ -31,6 +31,7 @@ function App() {
   const store = usePantryStore();
   const [editingAreaId, setEditingAreaId] = useState<StorageAreaId | null>(null);
   const [isAddingArea, setIsAddingArea] = useState(false);
+  const [openingItem, setOpeningItem] = useState<PantryItem | null>(null);
   const [collapsedAreas, setCollapsedAreas] = useState<Set<StorageAreaId>>(new Set());
 
   if (store.isLoading) {
@@ -53,6 +54,18 @@ function App() {
     });
   };
 
+  const handleOpenItem = (itemId: string) => {
+    const item = store.items.find((i) => i.id === itemId);
+    if (item) {
+      // If there's only 1 item, skip the modal and start using automatically
+      if (item.quantity === 1) {
+        store.openItem(item.id, 1);
+      } else {
+        setOpeningItem(item);
+      }
+    }
+  };
+
   return (
     <div className="app">
       <header className="app-header">
@@ -68,9 +81,10 @@ function App() {
               items={store.getItemsForArea(area.id)}
               isCollapsed={collapsedAreas.has(area.id)}
               onToggleCollapse={() => toggleCollapsed(area.id)}
-              onAddItem={(name, qty) => store.addItem(name, qty, area.id)}
+              onAddItem={(name, qty, expiryDate) => store.addItem(name, qty, area.id, expiryDate)}
               onUpdateQuantity={store.updateItemQuantity}
               onRemoveItem={store.removeItem}
+              onOpenItem={handleOpenItem}
               onEditArea={() => setEditingAreaId(area.id)}
             />
           ))}
@@ -100,6 +114,14 @@ function App() {
           existingColors={store.storageAreas.map((a) => a.color)}
           onAdd={store.addStorageArea}
           onClose={() => setIsAddingArea(false)}
+        />
+      )}
+
+      {openingItem && (
+        <OpenItemModal
+          item={openingItem}
+          onOpen={(quantity) => store.openItem(openingItem.id, quantity)}
+          onClose={() => setOpeningItem(null)}
         />
       )}
     </div>

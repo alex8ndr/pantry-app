@@ -20,9 +20,10 @@ interface PantryStore {
   reorderStorageAreas: (ids: StorageAreaId[]) => void;
   
   // Item actions
-  addItem: (name: string, quantity: number, storageAreaId: StorageAreaId) => void;
+  addItem: (name: string, quantity: number, storageAreaId: StorageAreaId, expiryDate?: string) => void;
   updateItemQuantity: (id: string, quantity: number) => void;
   removeItem: (id: string) => void;
+  openItem: (id: string, quantityToOpen: number) => void;
 }
 
 function generateId(): string {
@@ -204,16 +205,18 @@ export function usePantryStore(): PantryStore {
   }, []);
 
   const addItem = useCallback(
-    (name: string, quantity: number, storageAreaId: StorageAreaId) => {
+    (name: string, quantity: number, storageAreaId: StorageAreaId, expiryDate?: string) => {
       const trimmedName = name.trim();
       if (!trimmedName || quantity < 1) return;
 
       setItems((prev) => {
-        // Merge with existing item if same name in same area
+        // Merge with existing item if same name, same area, same opened status, AND same expiry date
         const existingIndex = prev.findIndex(
           (item) =>
             item.storageAreaId === storageAreaId &&
-            item.name.toLowerCase() === trimmedName.toLowerCase()
+            item.name.toLowerCase() === trimmedName.toLowerCase() &&
+            item.isOpened === false && // Only merge with unopened items
+            item.expiryDate === expiryDate // Must have same expiry date
         );
 
         if (existingIndex >= 0) {
@@ -231,6 +234,8 @@ export function usePantryStore(): PantryStore {
           quantity,
           storageAreaId,
           createdAt: Date.now(),
+          isOpened: false,
+          expiryDate,
         }];
       });
     },
@@ -253,6 +258,60 @@ export function usePantryStore(): PantryStore {
     setItems((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
+  const openItem = useCallback((id: string, quantityToOpen: number) => {
+    setItems((prev) => {
+      const itemIndex = prev.findIndex((item) => item.id === id);
+      if (itemIndex === -1) return prev;
+
+      const item = prev[itemIndex];
+      
+      // Calculate new expiry date (halve the days remaining, minimum 1 day)
+      let newExpiryDate = item.expiryDate;
+      if (item.expiryDate) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const expiry = new Date(item.expiryDate);
+        const daysLeft = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (daysLeft > 1) {
+          const newDaysLeft = Math.max(1, Math.floor(daysLeft / 2));
+          const newExpiryTime = today.getTime() + (newDaysLeft * 24 * 60 * 60 * 1000);
+          newExpiryDate = new Date(newExpiryTime).toISOString().split('T')[0];
+        }
+      }
+      
+      // If opening all items, just mark the existing item as opened
+      if (quantityToOpen >= item.quantity) {
+        return prev.map((itm) =>
+          itm.id === id
+            ? { ...itm, isOpened: true, openedAt: Date.now(), expiryDate: newExpiryDate }
+            : itm
+        );
+      }
+
+      // Split the item: reduce quantity of unopened, create new opened item
+      const updated = [...prev];
+      updated[itemIndex] = {
+        ...item,
+        quantity: item.quantity - quantityToOpen,
+      };
+
+      // Add new opened item with adjusted expiry date
+      const openedItem: PantryItem = {
+        id: generateId(),
+        name: item.name,
+        quantity: quantityToOpen,
+        storageAreaId: item.storageAreaId,
+        createdAt: item.createdAt,
+        isOpened: true,
+        openedAt: Date.now(),
+        expiryDate: newExpiryDate,
+      };
+
+      return [...updated, openedItem];
+    });
+  }, []);
+
   return {
     storageAreas,
     items,
@@ -266,5 +325,6 @@ export function usePantryStore(): PantryStore {
     addItem,
     updateItemQuantity,
     removeItem,
+    openItem,
   };
 }
