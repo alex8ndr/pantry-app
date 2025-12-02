@@ -13,8 +13,8 @@ const mockArea: StorageArea = {
 };
 
 const mockItems: PantryItem[] = [
-  { id: 'item-1', name: 'Milk', quantity: 2, storageAreaId: 'test-area-1', createdAt: Date.now() },
-  { id: 'item-2', name: 'Eggs', quantity: 12, storageAreaId: 'test-area-1', createdAt: Date.now() },
+  { id: 'item-1', name: 'Milk', quantity: 2, storageAreaId: 'test-area-1', createdAt: Date.now(), isOpened: false },
+  { id: 'item-2', name: 'Eggs', quantity: 12, storageAreaId: 'test-area-1', createdAt: Date.now(), isOpened: false },
 ];
 
 const defaultProps = {
@@ -25,6 +25,7 @@ const defaultProps = {
   onAddItem: vi.fn(),
   onUpdateQuantity: vi.fn(),
   onRemoveItem: vi.fn(),
+  onOpenItem: vi.fn(),
   onEditArea: vi.fn(),
 };
 
@@ -58,7 +59,7 @@ describe('StorageAreaCard', () => {
     await user.type(input, 'Butter');
     await user.keyboard('{Enter}');
 
-    expect(onAddItem).toHaveBeenCalledWith('Butter', 1);
+    expect(onAddItem).toHaveBeenCalledWith('Butter', 1, undefined);
     expect(input).toHaveValue(''); // clears after submit
   });
 

@@ -40,9 +40,9 @@ export interface PantryItem {
   quantity: number;
   storageAreaId: StorageAreaId;
   createdAt: number;
-  // Future fields - items with different values here won't merge:
-  // expiryDate?: string;
-  // isOpened?: boolean;
+  isOpened: boolean;
+  openedAt?: number; // Timestamp when item was opened/started
+  expiryDate?: string; // ISO date string (YYYY-MM-DD) - items with different expiry dates won't merge
 }
 
 export const DEFAULT_STORAGE_AREAS: StorageArea[] = [
